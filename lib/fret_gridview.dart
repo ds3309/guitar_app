@@ -15,8 +15,24 @@ class FretGridView extends StatelessWidget
       children: 
         List.generate(12, (index) {
           return GestureDetector(
-            child: Container(
-              child: Image.asset(_getImagePath(index), fit:BoxFit.cover),
+            child: Stack(
+              children: [
+                Container (
+                  child: Image.asset(_getImagePath(index), fit:BoxFit.cover)
+                ),
+                Visibility(
+                  visible: false,
+                  child: 
+                    Text(
+                      '$index',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                )
+              ],
+              fit: StackFit.expand
             ),
             onTap:() {
               tapHandler(_calcPositionIndex(index));
