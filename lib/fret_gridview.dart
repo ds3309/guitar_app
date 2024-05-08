@@ -1,41 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:guitar_app/note_definition.dart';
 
-class FretGridView extends StatelessWidget
+class FretCellData
 {
-  final int _indexOffset = 12;
+  final bool visible;
+  final String text;
+  final Color textColor;
 
-  final int fretNo;
+  const FretCellData({
+    required this.visible,
+    required this.text,
+    required this.textColor
+  });
+}
+
+class FretGridView extends StatefulWidget
+{
   final Function tapHandler;
-  const FretGridView({Key? key, required this.fretNo, required this.tapHandler}) : super(key: key);
+  const FretGridView({
+    super.key, 
+    required this.tapHandler
+  });
+
+  @override
+  State<FretGridView> createState() => _FretGridViewState();
+}
+class _FretGridViewState extends State<FretGridView>
+{
+  final int _fretCount = 12;
+  final int _stringsCount = 6;
+  final List<FretCellData> fretCellList = []; 
+
+  @override
+  void initState()
+  {
+    super.initState();
+    // todo fretCellListの初期化
+  }
 
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisSpacing: 1.0, childAspectRatio: 2.5, shrinkWrap: true, crossAxisCount: 12,
+      crossAxisSpacing: 1.0, 
+      childAspectRatio: 2.5, 
+      shrinkWrap: true, 
+      crossAxisCount: _fretCount,
       children: 
-        List.generate(12, (index) {
+        List.generate(_fretCount * _stringsCount, (index) {
           return GestureDetector(
             child: Stack(
+              fit: StackFit.expand,
               children: [
-                Container (
-                  child: Image.asset(_getImagePath(index), fit:BoxFit.cover)
-                ),
+                Image.asset(_getImagePath(index), fit:BoxFit.cover),
                 Visibility(
-                  visible: false,
+                  visible: true,
                   child: 
                     Text(
-                      '$index',
+                      _getFretNote(index),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       ),
                     ),
                 )
               ],
-              fit: StackFit.expand
             ),
             onTap:() {
-              tapHandler(_calcPositionIndex(index));
+              widget.tapHandler(index);
             },
           );
         }),
@@ -44,32 +75,34 @@ class FretGridView extends StatelessWidget
 
   String _getImagePath(int index)
   {
-    switch(fretNo)
+    int stringNo = (index ~/ _fretCount) + 1;
+    int fretNo = index % _fretCount;
+    switch(stringNo)
     {
-      case 1: return index == 0 ? 'assets/image/open1st.png' : 'assets/image/1st.png';
-      case 2: return index == 0 ? 'assets/image/open2nd.png' : 'assets/image/2nd.png';
+      case 1: return fretNo == 0 ? 'assets/image/open1st.png' : 'assets/image/1st.png';
+      case 2: return fretNo == 0 ? 'assets/image/open2nd.png' : 'assets/image/2nd.png';
       case 3:
-        if(index == 3 || index == 5 || index == 7 || index == 9) {
+        if(fretNo == 3 || fretNo == 5 || fretNo == 7 || fretNo == 9) {
           return 'assets/image/pos3rd.png';
         }
         else {
-          return index == 0 ? 'assets/image/open3rd.png' : 'assets/image/3rd.png';
+          return fretNo == 0 ? 'assets/image/open3rd.png' : 'assets/image/3rd.png';
         }
       case 4:
-        if(index == 3 || index == 5 || index == 7 || index == 9) {
+        if(fretNo == 3 || fretNo == 5 || fretNo == 7 || fretNo == 9) {
           return 'assets/image/pos4th.png';
         }
         else {
-          return index == 0 ? 'assets/image/open4th.png' : 'assets/image/4th.png';
+          return fretNo == 0 ? 'assets/image/open4th.png' : 'assets/image/4th.png';
         }
-      case 5: return index == 0 ? 'assets/image/open5th.png' : 'assets/image/5th.png';
-      case 6: return index == 0 ? 'assets/image/open6th.png' : 'assets/image/6th.png';
+      case 5: return fretNo == 0 ? 'assets/image/open5th.png' : 'assets/image/5th.png';
+      case 6: return fretNo == 0 ? 'assets/image/open6th.png' : 'assets/image/6th.png';
     }
     return '';
   }
 
-  int _calcPositionIndex(int index)
+  String _getFretNote(int index)
   {
-    return ((fretNo - 1) * _indexOffset) + index;
+    return NoteDefinition().notesMap[index];
   }
 }

@@ -134,12 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ],
             ),
-            FretGridView(fretNo: 1, tapHandler: _answer),
-            FretGridView(fretNo: 2, tapHandler: _answer),
-            FretGridView(fretNo: 3, tapHandler: _answer),
-            FretGridView(fretNo: 4, tapHandler: _answer),
-            FretGridView(fretNo: 5, tapHandler: _answer),
-            FretGridView(fretNo: 6, tapHandler: _answer),
+            FretGridView(tapHandler: _answer),
             Row (
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
