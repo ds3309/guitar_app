@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:guitar_app/fret_gridview_cell.dart';
 import 'package:guitar_app/note_definition.dart';
-
-class FretCellData
-{
-  final bool visible;
-  final String text;
-  final Color textColor;
-
-  const FretCellData({
-    required this.visible,
-    required this.text,
-    required this.textColor
-  });
-}
 
 class FretGridView extends StatefulWidget
 {
@@ -29,14 +17,6 @@ class _FretGridViewState extends State<FretGridView>
 {
   final int _fretCount = 12;
   final int _stringsCount = 6;
-  final List<FretCellData> fretCellList = []; 
-
-  @override
-  void initState()
-  {
-    super.initState();
-    // todo fretCellListの初期化
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,23 +28,13 @@ class _FretGridViewState extends State<FretGridView>
       children: 
         List.generate(_fretCount * _stringsCount, (index) {
           return GestureDetector(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(_getImagePath(index), fit:BoxFit.cover),
-                Visibility(
-                  visible: true,
-                  child: 
-                    Text(
-                      _getFretNote(index),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                )
-              ],
-            ),
+            child: 
+              FretGridViewCell(
+                visible: true,
+                textColor: Colors.greenAccent,
+                note: _getFretNote(index),
+                imagePath: _getImagePath(index),
+              ),
             onTap:() {
               widget.tapHandler(index);
             },
@@ -75,7 +45,9 @@ class _FretGridViewState extends State<FretGridView>
 
   String _getImagePath(int index)
   {
+    // 1弦～6弦までの弦No
     int stringNo = (index ~/ _fretCount) + 1;
+    // 0(開放弦)～11フレットのNo
     int fretNo = index % _fretCount;
     switch(stringNo)
     {

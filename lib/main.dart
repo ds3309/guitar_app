@@ -80,15 +80,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _answer(int index)
+  bool _answer(int index)
   {
+    bool ret = false;
     if (_manager.answer(index)) {
       _buzzer(true);
+      ret = true;
     }
     else {
       _buzzer(false);
+      ret = false;
     }
     _updateGameState();
+    return ret;
   }
 
   void _updateGameState()
