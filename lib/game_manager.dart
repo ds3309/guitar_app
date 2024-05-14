@@ -1,13 +1,11 @@
 import 'dart:math';
 
+import 'package:guitar_app/note_definition.dart';
+
 class GameManager
 {
   bool _isGameStarting = false;
 
-  final List<String> _scaleList = [
-    'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'
-  ];
-  final List<String> _notesMap = [];
   List<int> _answerIndexes = [];
   List<int> _tempAnswerIndexes = [];
 
@@ -16,7 +14,6 @@ class GameManager
     if (isGameStarting()) {
       return;
     }
-    _makeNotesMap();
     _answerIndexes.clear();
     _tempAnswerIndexes.clear();
     _isGameStarting = true;
@@ -27,7 +24,6 @@ class GameManager
     if (!isGameStarting()) {
       return;
     }
-    _notesMap.clear();
     _answerIndexes.clear();
     _tempAnswerIndexes.clear();
     _isGameStarting = false;
@@ -52,16 +48,18 @@ class GameManager
   String makeQuestion(String? prev)
   {
     // 音名が一致するインデックスを回答とする
+    var scaleList = NoteDefinition().scaleList;
     _answerIndexes.clear();
-    String note = _scaleList[Random().nextInt(_scaleList.length - 1)];
+    String note = scaleList[Random().nextInt(scaleList.length - 1)];
     if (prev != null) {
       while (note == prev) {
-        note = _scaleList[Random().nextInt(_scaleList.length - 1)];
+        note = scaleList[Random().nextInt(scaleList.length - 1)];
       }
     }
-    for (int i = 0; i < _notesMap.length; i++)
+    var notesMap = NoteDefinition().notesMap;
+    for (int i = 0; i < notesMap.length; i++)
     {
-      if (_notesMap[i] == note)
+      if (notesMap[i] == note)
       {
         _answerIndexes.add(i);
       }
@@ -95,26 +93,5 @@ class GameManager
       }
     }
     return true;
-  }
-
-  // 1弦から6弦までの0～12フレットの音階を配列に格納する
-  void _makeNotesMap()
-  {
-    // 1弦から6弦までの開放弦の音
-    var openStringNotes = ['E', 'B', 'G', 'D', 'A', 'E'];
-    for (int i = 0; i < openStringNotes.length; i++)
-    {
-      // 開放弦の音を基準として順番に音階を配列に格納する
-      String startNote = openStringNotes[i];
-      int index = _scaleList.indexOf(startNote);
-      for (int fret = 0; fret < _scaleList.length; fret++)
-      {
-        if(index >= _scaleList.length)
-        {
-          index = 0;
-        }
-        _notesMap.add(_scaleList[index++]);
-      }
-    }
   }
 }

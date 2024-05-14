@@ -45,9 +45,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _question = '"   "';
   String _correctCount = "正答数：0 / 0";
+  late GlobalObjectKey<FretGridViewState> _fretGridViewKey;
 
   final _player = AudioPlayer();
-  GameManager _manager =GameManager();
+  final GameManager _manager =GameManager();
 
   Future<void> _buzzer(bool right) async
   {
@@ -78,17 +79,21 @@ class _MyHomePageState extends State<MyHomePage> {
       _question = _manager.makeQuestion(_question);
       _correctCount = '${_manager.correctCount()} / ${_manager.ansewersCount()}';
     });
+    _fretGridViewKey.currentState?.clearView();
   }
 
-  void _answer(int index)
+  bool _answer(int index)
   {
+    bool ret = false;
     if (_manager.answer(index)) {
       _buzzer(true);
+      ret = true;
     }
     else {
       _buzzer(false);
+      ret = false;
     }
-    _updateGameState();
+    return ret;
   }
 
   void _updateGameState()
@@ -97,18 +102,20 @@ class _MyHomePageState extends State<MyHomePage> {
       // すべて正解したら新しい問題を出題
       setState(() {
         _question = _manager.makeQuestion(_question);
-      _correctCount = '${_manager.correctCount()} / ${_manager.ansewersCount()}';
+        _correctCount = '${_manager.correctCount()} / ${_manager.ansewersCount()}';
       });
+      _fretGridViewKey.currentState?.clearView();
     }
     else {
       setState(() {
-      _correctCount = '${_manager.correctCount()} / ${_manager.ansewersCount()}';
+        _correctCount = '${_manager.correctCount()} / ${_manager.ansewersCount()}';
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    _fretGridViewKey = GlobalObjectKey<FretGridViewState>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -129,31 +136,26 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontSize: 30.0
                       ),
                       ),
-                    Text('$_correctCount'),
+                    Text(_correctCount),
                   ]
                 ),
               ],
             ),
-            FretGridView(fretNo: 1, tapHandler: _answer),
-            FretGridView(fretNo: 2, tapHandler: _answer),
-            FretGridView(fretNo: 3, tapHandler: _answer),
-            FretGridView(fretNo: 4, tapHandler: _answer),
-            FretGridView(fretNo: 5, tapHandler: _answer),
-            FretGridView(fretNo: 6, tapHandler: _answer),
+            FretGridView(key:_fretGridViewKey ,tapHandler: _answer, callback: _updateGameState),
             Row (
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
-                  child: const Text('Start'),
                   onPressed: _gameStart,
+                  child: const Text('Start'),
                 ),
                 ElevatedButton( 
-                  child: const Text('Stop'),
                   onPressed: _gameStop,
+                  child: const Text('Stop'),
                 ),
                 ElevatedButton( 
-                  child: const Text('Skip'),
                   onPressed: _skip,
+                  child: const Text('Skip'),
                 ),
               ]
             ),
