@@ -1,22 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:guitar_app/fret_gridview_cell.dart';
 import 'package:guitar_app/note_definition.dart';
+
+class CellData
+{
+  bool visible;
+  Color textColor;
+  final int index;
+  final String note;
+  final String imagePath;
+
+  CellData({
+    required this.visible,
+    required this.textColor,
+    required this.index,
+    required this.note,
+    required this.imagePath
+  });
+}
 
 class FretGridView extends StatefulWidget
 {
   final Function tapHandler;
+  final Function callback;
   const FretGridView({
     super.key, 
-    required this.tapHandler
+    required this.tapHandler,
+    required this.callback
   });
 
   @override
-  State<FretGridView> createState() => _FretGridViewState();
+  State<FretGridView> createState() => FretGridViewState();
 }
-class _FretGridViewState extends State<FretGridView>
+
+class FretGridViewState extends State<FretGridView>
 {
   final int _fretCount = 12;
   final int _stringsCount = 6;
+
+  final List<CellData> _cellList = <CellData>[];
+
+  void clearView()
+  {
+    for (var item in _cellList) {
+      item.visible = false;
+    }
+  }
+
+  @override
+  void initState()
+  {
+    super.initState();
+    for(int i = 0; i < _fretCount * _stringsCount; i++) {
+      _cellList.add(CellData(
+        visible: false, 
+        textColor: Colors.greenAccent, 
+        index: i, 
+        note: _getFretNote(i), 
+        imagePath: _getImagePath(i))
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +68,39 @@ class _FretGridViewState extends State<FretGridView>
       childAspectRatio: 2.5, 
       shrinkWrap: true, 
       crossAxisCount: _fretCount,
-      children: 
-        List.generate(_fretCount * _stringsCount, (index) {
-          return GestureDetector(
-            child: 
-              FretGridViewCell(
-                visible: true,
-                textColor: Colors.greenAccent,
-                note: _getFretNote(index),
-                imagePath: _getImagePath(index),
-              ),
-            onTap:() {
-              widget.tapHandler(index);
-            },
-          );
-        }),
+      children: List.generate(_cellList.length, (index) {
+        return GestureDetector(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset(_cellList[index].imagePath, fit:BoxFit.cover),
+              Visibility(
+                visible: _cellList[index].visible,
+                child: 
+                  Text(
+                    _cellList[index].note,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: _cellList[index].textColor
+                    ),
+                  ),
+              )
+            ],
+          ),
+          onTap:() {
+            if (widget.tapHandler(index)) {
+              _cellList[index].visible = true;
+              _cellList[index].textColor = Colors.lightGreen;
+            }
+            else {
+              _cellList[index].visible = true;
+              _cellList[index].textColor = Colors.red;
+            }
+            widget.callback();
+          },
+        );
+      }),
     );
   }
 
