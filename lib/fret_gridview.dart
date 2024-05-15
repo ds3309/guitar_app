@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:guitar_app/note_definition.dart';
+import 'package:bordered_text/bordered_text.dart';
 
 class CellData
 {
@@ -53,7 +54,7 @@ class FretGridViewState extends State<FretGridView>
     for(int i = 0; i < _fretCount * _stringsCount; i++) {
       _cellList.add(CellData(
         visible: false, 
-        textColor: Colors.greenAccent, 
+        textColor: Colors.green, 
         index: i, 
         note: _getFretNote(i), 
         imagePath: _getImagePath(i))
@@ -76,22 +77,25 @@ class FretGridViewState extends State<FretGridView>
               Image.asset(_cellList[index].imagePath, fit:BoxFit.cover),
               Visibility(
                 visible: _cellList[index].visible,
-                child: 
-                  Text(
+                child: BorderedText(
+                  strokeWidth: 3.0,
+                  strokeColor: Colors.white,
+                  child: Text(
                     _cellList[index].note,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 25,
+                      fontSize: 22,
                       color: _cellList[index].textColor
                     ),
                   ),
+                ),
               )
             ],
           ),
           onTap:() {
             if (widget.tapHandler(index)) {
               _cellList[index].visible = true;
-              _cellList[index].textColor = Colors.lightGreen;
+              _cellList[index].textColor = Colors.green;
             }
             else {
               _cellList[index].visible = true;

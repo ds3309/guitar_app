@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: const  TextStyle(
                         fontSize: 30.0
                       ),
-                      ),
+                    ),
                     Text(_correctCount),
                   ]
                 ),
